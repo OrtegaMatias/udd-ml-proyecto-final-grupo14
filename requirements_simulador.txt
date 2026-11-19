@@ -1,0 +1,5 @@
+-r requirements_entrenamiento.txt
+fastapi==0.162.7
+uvicorn==0.53.0
+streamlit==1.66.1
+requests==2.34.2

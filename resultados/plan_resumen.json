@@ -1,0 +1,20 @@
+{
+ "mejor_modelo":"TabPFN ajustado",
+ "pedidos_dia":994.0681818182,
+ "capacidad_dia":80,
+ "capacidad_pct":0.0804773772,
+ "k":704,
+ "dias_test":8.8002011934,
+ "revisados_dia_test":704,
+ "capturados_modelo":456,
+ "capturados_global":597,
+ "capturados_azar":103.1696387746,
+ "lift":4.419904978,
+ "criticos_test":1282,
+ "costo_critico":19750.0,
+ "costo_modelo_anual":4440000,
+ "costo_coordinador_anual":18000000,
+ "costo_accion":1500,
+ "efectividad":0.4,
+ "dias_anio":365
+}

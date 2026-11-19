@@ -1,0 +1,5 @@
+Modelo,F1_cv,F1_train,F1_test,Tiempo_s,Prediccion_test_s,Brecha
+MLP base,0.612,0.664,0.621,15.705,0.039,0.043
+MLP ajustada,0.619,0.65,0.619,422.384,0.022,0.031
+TabPFN base,0.647,0.659,0.65,460.738,298.72,0.009
+TabPFN ajustado,0.648,0.658,0.65,1336.576,123.251,0.008

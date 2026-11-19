@@ -1,0 +1,10 @@
+Variable,Valores con riesgo bajo la tasa base,Prob. minima,Prob. maxima,Rango de efecto
+Area,"Urban, Other",0.144,0.7106,0.5666
+Agent_Rating,4.5 a 5,0.1105,0.3359,0.2254
+distancia_km,1 a 9,0.0437,0.2442,0.2005
+Weather,"Sunny, Windy, Stormy, Sandstorms",0.0462,0.2306,0.1844
+Traffic,"Low, Medium",0.0674,0.2396,0.1722
+Agent_Age,15 a 25,0.0961,0.2048,0.1087
+Vehicle,"scooter, van",0.1121,0.1769,0.0648
+hora_pedido,ninguno,0.1584,0.1629,0.0045
+espera_retiro_min,ninguno,0.1593,0.1598,0.0006

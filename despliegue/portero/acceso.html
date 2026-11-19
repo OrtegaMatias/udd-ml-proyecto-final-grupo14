@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Centro de despacho · Grupo 14</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B1622; --card:#15263A; --card2:#1B3149; --line:#25415E;
+  --text:#E8EEF4; --muted:#93A7BC; --dim:#5F7690;
+  --accent:#FF8A3D; --support:#2EC4B6; --kraft:#C8955F; --kraft2:#A8743F; --c4:#FF4D5E;
+  --titulo:"Space Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --texto:"Inter","Helvetica Neue","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{background:radial-gradient(1200px 600px at 85% -10%,rgba(255,138,61,.12),transparent 60%),
+  radial-gradient(900px 500px at -10% 110%,rgba(46,196,182,.09),transparent 60%),var(--bg);
+  color:var(--text);font-family:var(--texto);min-height:100dvh;overflow-x:hidden;display:flex;flex-direction:column}
+
+.cinta{position:relative;margin:28px -40px 0;height:44px;transform:rotate(-1.6deg);
+  background:repeating-linear-gradient(135deg,rgba(200,149,95,.95) 0 26px,rgba(185,134,82,.95) 26px 52px);
+  box-shadow:0 6px 18px rgba(0,0,0,.35);display:flex;align-items:center;overflow:hidden}
+.cinta span{font:700 15px var(--titulo);letter-spacing:.25em;color:rgba(40,25,10,.55);white-space:nowrap;animation:correr 40s linear infinite}
+@keyframes correr{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px clamp(16px,5vw,72px) 0}
+.udd{height:44px;width:auto;display:block}
+.curso{font:600 13px var(--titulo);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);text-align:right}
+
+main{flex:1;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(28px,5vw,72px);
+  align-items:center;padding:40px clamp(16px,5vw,72px) 32px;max-width:1320px;width:100%;margin:0 auto}
+
+.etiqueta{display:inline-flex;align-items:stretch;background:#F4EBDD;color:#1D232B;border-radius:6px;overflow:hidden;
+  font:700 13px var(--titulo);letter-spacing:.08em;text-transform:uppercase;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.etiqueta .num{background:var(--kraft2);color:#fff;padding:7px 12px}
+.etiqueta .txt{padding:7px 14px}
+.etiqueta .barras{width:70px;margin:6px 10px 6px 0;background:repeating-linear-gradient(90deg,#1D232B 0 2px,transparent 2px 4px,#1D232B 4px 5px,transparent 5px 8px,#1D232B 8px 11px,transparent 11px 13px)}
+h1{font:700 clamp(40px,6vw,74px)/1.02 var(--titulo);letter-spacing:-.02em;margin-top:24px}
+h1 em{font-style:normal;color:var(--c4)}
+.bajada{font-size:clamp(17px,1.6vw,21px);line-height:1.5;color:var(--muted);margin-top:18px;max-width:58ch}
+.puntos{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+.pill{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 15px;font-size:15px;color:var(--muted)}
+.pill svg{width:18px;height:18px;color:var(--accent);flex:none}
+
+/* ruta con la caja */
+.ruta{position:relative;height:96px;margin-top:34px;max-width:560px}
+.ruta::before{content:"";position:absolute;left:0;right:0;top:72px;border-top:3px dashed var(--line)}
+.ruta .fin{position:absolute;right:0;top:60px;width:26px;height:26px;border-radius:50%;background:var(--support);box-shadow:0 0 0 7px rgba(46,196,182,.18)}
+.ruta .inicio{position:absolute;left:0;top:64px;width:18px;height:18px;border-radius:50%;background:var(--accent)}
+.ruta svg{position:absolute;top:0;width:78px;height:78px;animation:viaje 7s ease-in-out infinite alternate}
+@keyframes viaje{from{left:4%}to{left:calc(100% - 110px)}}
+
+/* tarjeta de acceso */
+.acceso{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:30px clamp(20px,3vw,34px) 28px;position:relative;
+  box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.acceso::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;border-radius:22px 22px 0 0;
+  background:repeating-linear-gradient(90deg,var(--accent) 0 18px,var(--kraft) 18px 36px)}
+.sello{position:absolute;top:-14px;right:18px;background:var(--accent);color:#1A0F05;font:700 12px var(--titulo);letter-spacing:.12em;padding:5px 11px;border-radius:6px;text-transform:uppercase}
+.acceso h2{font:700 28px/1.15 var(--titulo)}
+.acceso .sub{color:var(--muted);font-size:15px;line-height:1.5;margin-top:8px}
+label{display:block;font:600 13px var(--titulo);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 8px}
+input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font:500 17px var(--texto);outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(255,138,61,.18)}
+button{margin-top:24px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;border-radius:12px;padding:14px 18px;
+  background:var(--accent);color:#0B1622;font:700 18px var(--titulo);cursor:pointer;box-shadow:0 4px 0 #B85A1F;transition:transform .12s}
+button:hover{transform:translateY(-1px)}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 #B85A1F}
+button svg{width:20px;height:20px}
+.error{display:flex;gap:10px;align-items:flex-start;margin-top:18px;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,77,94,.55);background:rgba(255,77,94,.1);color:#FFC2C8;font-size:15px;line-height:1.4}
+.nota{margin-top:18px;font-size:13.5px;line-height:1.5;color:var(--dim)}
+.nota a{color:var(--support);text-decoration:none;border-bottom:1px solid rgba(46,196,182,.4)}
+
+footer{padding:0 clamp(16px,5vw,72px) 26px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 24px;color:var(--dim);font-size:14px}
+footer b{color:var(--muted);font-weight:600}
+
+@media (max-width:860px){
+  main{grid-template-columns:1fr;padding-top:28px}
+  .ruta{display:none}
+  .udd{height:34px}
+  .curso{display:none}
+}
+@media (prefers-reduced-motion:reduce){.cinta span,.ruta svg{animation:none}}
+</style>
+</head>
+<body>
+  <div class="cinta" aria-hidden="true"><span>FRÁGIL · PRIORIZAR RETRASO CRÍTICO · FRÁGIL · PRIORIZAR RETRASO CRÍTICO · FRÁGIL · PRIORIZAR RETRASO CRÍTICO · FRÁGIL · PRIORIZAR RETRASO CRÍTICO · FRÁGIL · PRIORIZAR RETRASO CRÍTICO · FRÁGIL · PRIORIZAR RETRASO CRÍTICO · </span></div>
+
+  <header>
+    <img class="udd" src="/acceso/udd-logo.png" alt="Universidad del Desarrollo">
+    <div class="curso">Machine Learning Supervisado · Examen 2026</div>
+  </header>
+
+  <main>
+    <section>
+      <div class="etiqueta"><span class="num">G14</span><span class="txt">Centro de despacho</span><span class="barras"></span></div>
+      <h1>¿Llegará con<br><em>retraso crítico</em>?</h1>
+      <p class="bajada">Simulador what-if de entregas de última milla. TabPFN ajustado predice en vivo el nivel de retraso de cada pedido; mueve la distancia, la nota del repartidor o el tráfico y mira cómo cambia el riesgo.</p>
+      <div class="puntos">
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></svg>43.739 pedidos</span>
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/></svg>F1 macro 0,650 en test</span>
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>5 niveles de retraso</span>
+      </div>
+      <div class="ruta" aria-hidden="true">
+        <span class="inicio"></span><span class="fin"></span>
+        <svg viewBox="0 0 200 200">
+          <polygon points="100,22 178,58 100,94 22,58" fill="#D9A971"/>
+          <polygon points="22,58 100,94 100,182 22,146" fill="#B98652"/>
+          <polygon points="178,58 100,94 100,182 178,146" fill="#A8743F"/>
+          <polygon points="61,40 139,76 139,92 61,56" fill="#E9CFA6" opacity=".9"/>
+          <g transform="skewY(-24.8) translate(0,58)"><rect x="112" y="118" width="52" height="30" rx="3" fill="#F4EBDD"/>
+            <g fill="#1D232B"><rect x="117" y="124" width="2" height="16"/><rect x="121" y="124" width="1" height="16"/><rect x="124" y="124" width="3" height="16"/><rect x="129" y="124" width="1" height="16"/><rect x="132" y="124" width="2" height="16"/><rect x="136" y="124" width="3" height="16"/><rect x="141" y="124" width="1" height="16"/><rect x="144" y="124" width="2" height="16"/><rect x="148" y="124" width="1" height="16"/><rect x="151" y="124" width="3" height="16"/><rect x="156" y="124" width="2" height="16"/></g></g>
+        </svg>
+      </div>
+    </section>
+
+    <section>
+      <form class="acceso" method="post" action="/acceso" autocomplete="on">
+        <span class="sello">Acceso privado</span>
+        <h2>Entrar al simulador</h2>
+        <p class="sub">Ingresa con el usuario y la contraseña que te entregó el grupo.</p>
+        {{ERROR}}
+        <input type="hidden" name="siguiente" value="{{SIGUIENTE}}">
+        <label for="usuario">Usuario</label>
+        <input id="usuario" name="usuario" autocomplete="username" required autofocus value="{{USUARIO}}">
+        <label for="clave">Contraseña</label>
+        <input id="clave" name="clave" type="password" autocomplete="current-password" required>
+        <button type="submit">Entrar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="nota">El modelo corre en un servidor sin GPU: la primera consulta puede tardar unos segundos. Código y notebook en
+          <a href="https://github.com/OrtegaMatias/udd-ml-proyecto-final-grupo14" target="_blank" rel="noopener">GitHub</a>.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <span><b>Grupo 14</b> · Joaquín Rivas · Matías Ortega</span>
+    <span>Proyecto final · Machine Learning Supervisado · Universidad del Desarrollo</span>
+  </footer>
+</body>
+</html>

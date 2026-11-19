@@ -1,0 +1,38 @@
+# Entorno y compilados
+.venv/
+__pycache__/
+.ruff_cache/
+.ipynb_checkpoints/
+.DS_Store
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+
+# Secretos (la API Key de TabPFN vive en ~/.config/tabpfn/token, fuera del proyecto)
+.env
+.env.*
+*.key
+secrets*
+
+# Material del curso y archivos de trabajo locales
+material_clases/
+AGENTS.md
+CLAUDE.md
+entregas/**/*.zip
+htpasswd
+modelo_ajustado/
+
+# Documentos internos del grupo (preparación de la presentación y estudio): no van al repositorio
+GUION_EXPOSICION.md
+GUION_COMPLETO.md
+GUION_COMPLETO_Grupo_14.pdf
+PREGUNTAS_DEFENSA.md
+MATRIZ_REVISION.md
+DATASET_CANDIDATOS.md
+guias_estudio/
+enunciado/
+entregas/
+scripts/*
+!scripts/medir_tiempos_dispositivo.py
+datos/amazon_delivery_ordenado.xlsx

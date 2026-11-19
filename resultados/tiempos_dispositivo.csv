@@ -1,0 +1,3 @@
+Dispositivo,Equipo,Filas_entrenamiento,Filas_prediccion,Fit_s,Prediccion_s,Veces_mas_lento_que_MPS,Diferencia_max_probabilidad_vs_MPS
+GPU Apple (MPS),Apple M5 Pro,34991,500,0.49,103.1,1.0,0.0
+CPU,Apple M5 Pro,34991,500,2.03,1033.2,10.0,0.003664

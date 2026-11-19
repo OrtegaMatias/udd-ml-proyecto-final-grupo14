@@ -1,0 +1,14 @@
+{
+ "meta":0.1465233917,
+ "radio_km":{
+  "Low":21,
+  "Medium":9,
+  "High":9,
+  "Jam":9
+ },
+ "p_antes":0.1594618857,
+ "p_despues":0.0297450572,
+ "altos_antes":32,
+ "altos_despues":4,
+ "n_muestra":200
+}

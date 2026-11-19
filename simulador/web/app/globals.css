@@ -1,0 +1,163 @@
+@import "tailwindcss";
+
+/* Tokens de la presentación del grupo (PRESENTACION_HITO1.html): centro de despacho de última milla. */
+@theme {
+  --color-fondo: #0b1622;
+  --color-fondo2: #0e1c2b;
+  --color-tarjeta: #15263a;
+  --color-tarjeta2: #1b3149;
+  --color-linea: #25415e;
+  --color-texto: #e8eef4;
+  --color-atenuado: #93a7bc;
+  --color-tenue: #5f7690;
+  --color-acento: #ff8a3d;
+  --color-apoyo: #2ec4b6;
+  --color-kraft: #c8955f;
+  --color-kraft2: #a8743f;
+  --color-papel: #f4ebdd;
+  --color-tinta: #1d232b;
+  --color-c0: #3ddc97;
+  --color-c1: #2ec4b6;
+  --color-c2: #f6c445;
+  --color-c3: #ff8a3d;
+  --color-c4: #ff4d5e;
+
+  --font-titulo: var(--fuente-titulo), "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-texto: var(--fuente-texto), "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  font-size: 16px;
+}
+/* Pantalla del examen (1920×1080): todo un poco más grande para leer desde lejos. */
+@media (min-width: 1800px) {
+  html {
+    font-size: 17px;
+  }
+}
+
+body {
+  background:
+    radial-gradient(1200px 640px at 88% -12%, rgba(255, 138, 61, 0.09), transparent 60%),
+    radial-gradient(900px 520px at -10% 112%, rgba(46, 196, 182, 0.07), transparent 60%),
+    var(--color-fondo);
+  background-attachment: fixed;
+  color: var(--color-texto);
+  font-family: var(--font-texto);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: rgba(255, 138, 61, 0.35);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Código de barras de la etiqueta de envío */
+.barras {
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0 2px,
+    transparent 2px 4px,
+    currentColor 4px 5px,
+    transparent 5px 8px,
+    currentColor 8px 11px,
+    transparent 11px 13px,
+    currentColor 13px 14px,
+    transparent 14px 17px
+  );
+}
+
+/* Cinta de embalaje */
+.cinta {
+  background: repeating-linear-gradient(135deg, rgba(200, 149, 95, 0.95) 0 22px, rgba(185, 134, 82, 0.95) 22px 44px);
+}
+
+/* Ruta punteada (seguimiento) */
+.ruta {
+  background: repeating-linear-gradient(90deg, var(--color-linea) 0 8px, transparent 8px 14px);
+}
+
+/* Sliders: input nativo (accesible con teclado), pista dibujada por el componente */
+.deslizador {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  width: 100%;
+  height: 34px;
+  margin: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+}
+.deslizador::-webkit-slider-runnable-track {
+  height: 34px;
+  background: transparent;
+}
+.deslizador::-moz-range-track {
+  height: 34px;
+  background: transparent;
+}
+.deslizador::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--pulgar, var(--color-acento));
+  border: 4px solid var(--color-fondo);
+  box-shadow: 0 0 0 2px var(--pulgar, var(--color-acento)), 0 4px 10px rgba(0, 0, 0, 0.45);
+  transition: transform 0.12s ease;
+}
+.deslizador::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--pulgar, var(--color-acento));
+  border: 4px solid var(--color-fondo);
+  box-shadow: 0 0 0 2px var(--pulgar, var(--color-acento));
+}
+.deslizador:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+.deslizador:focus-visible {
+  outline: none;
+}
+.deslizador:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--pulgar, var(--color-acento)), 0 0 0 7px rgba(255, 138, 61, 0.35);
+}
+
+/* Barras de desplazamiento discretas */
+.desplazable {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-linea) transparent;
+}
+
+select.selector {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-atenuado) 50%),
+    linear-gradient(135deg, var(--color-atenuado) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

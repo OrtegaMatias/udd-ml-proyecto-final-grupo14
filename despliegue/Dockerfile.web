@@ -1,0 +1,10 @@
+# Frontend Next.js. SIMULADOR_API apunta al servicio "api" de compose.
+FROM node:24-slim
+WORKDIR /web
+COPY simulador/web/package.json simulador/web/package-lock.json ./
+RUN npm ci
+COPY simulador/web ./
+ENV SIMULADOR_API=http://api:8014 SIMULADOR_PROXY_TIMEOUT=600000 NEXT_TELEMETRY_DISABLED=1
+RUN npm run build || npm run build
+EXPOSE 3014
+CMD ["npm", "run", "start", "--", "-p", "3014", "-H", "0.0.0.0"]

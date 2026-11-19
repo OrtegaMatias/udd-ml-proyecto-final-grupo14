@@ -1,0 +1,15 @@
+# API de TabPFN (FastAPI) para un servidor Linux sin GPU: torch solo CPU.
+FROM python:3.12-slim
+WORKDIR /app
+COPY requirements_entrenamiento.txt requirements_simulador.txt ./
+RUN pip install --no-cache-dir torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu \
+ && pip install --no-cache-dir -r requirements_simulador.txt
+COPY simulador/__init__.py simulador/app_streamlit.py simulador/
+COPY simulador/api simulador/api
+COPY .streamlit .streamlit
+COPY datos datos
+COPY resultados resultados
+# TabPFN bloquea la CPU sobre 5.000 filas de entrenamiento salvo que se autorice
+ENV TABPFN_ALLOW_CPU_LARGE_DATASET=1 PYTHONUNBUFFERED=1
+EXPOSE 8014
+CMD ["uvicorn", "simulador.api.main:app", "--host", "0.0.0.0", "--port", "8014"]

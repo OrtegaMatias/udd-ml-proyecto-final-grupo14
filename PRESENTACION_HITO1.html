@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retraso en última milla</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B1622; --bg2:#0E1C2B; --card:#15263A; --card2:#1B3149; --line:#25415E;
+  --text:#E8EEF4; --muted:#93A7BC; --dim:#5F7690;
+  --accent:#FF8A3D; --support:#2EC4B6; --kraft:#C8955F; --kraft2:#A8743F;
+  --c0:#3DDC97; --c1:#2EC4B6; --c2:#F6C445; --c3:#FF8A3D; --c4:#FF4D5E;
+  --titulo:"Space Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --texto:"Inter","Helvetica Neue","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--texto);overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+#escenario{width:1600px;height:900px;position:relative;transform-origin:center center;flex:none}
+.slide{position:absolute;inset:0;padding:118px 96px 72px;display:none;flex-direction:column;
+  background:radial-gradient(1200px 600px at 85% -10%,rgba(255,138,61,.10),transparent 60%),
+             radial-gradient(900px 500px at -10% 110%,rgba(46,196,182,.08),transparent 60%),var(--bg);
+  overflow:hidden}
+.slide.activa{display:flex;animation:entrar .45s ease both}
+@keyframes entrar{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.f{opacity:0;transform:translateY(12px);transition:opacity .35s ease,transform .35s ease}
+.f.visible{opacity:1;transform:none}
+
+/* barra de seguimiento */
+#seguimiento{position:absolute;top:0;left:0;right:0;height:64px;display:flex;align-items:center;gap:0;padding:0 96px;z-index:5;
+  background:linear-gradient(to bottom,rgba(11,22,34,.95),rgba(11,22,34,0))}
+.etapa{display:flex;align-items:center;gap:10px;color:var(--dim);font:600 15px var(--titulo);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.etapa .punto{width:14px;height:14px;border-radius:50%;border:2px solid var(--dim);background:var(--bg)}
+.etapa.hecha{color:var(--muted)} .etapa.hecha .punto{background:var(--support);border-color:var(--support)}
+.etapa.actual{color:var(--accent)} .etapa.actual .punto{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 6px rgba(255,138,61,.18)}
+.tramo{flex:1;height:2px;margin:0 14px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px)}
+.tramo.hecho{background:var(--support)}
+
+/* etiqueta de envio */
+.etiqueta{display:inline-flex;align-items:stretch;align-self:flex-start;background:#F4EBDD;color:#1D232B;border-radius:6px;overflow:hidden;
+  font:700 15px var(--titulo);letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.etiqueta .num{background:var(--kraft2);color:#fff;padding:8px 14px}
+.etiqueta .txt{padding:8px 16px}
+.etiqueta .barras{width:92px;margin:7px 12px 7px 0;background:repeating-linear-gradient(90deg,#1D232B 0 2px,transparent 2px 4px,#1D232B 4px 5px,transparent 5px 8px,#1D232B 8px 11px,transparent 11px 13px)}
+h1{font:700 76px/1.02 var(--titulo);letter-spacing:-.02em}
+h2{font:700 54px/1.08 var(--titulo);letter-spacing:-.015em;margin-bottom:14px}
+h3{font:600 26px/1.2 var(--titulo)}
+.bajada{font-size:25px;line-height:1.45;color:var(--muted);max-width:1150px}
+.acento{color:var(--accent)} .apoyo{color:var(--support)}
+code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.9em;background:rgba(255,255,255,.07);padding:1px 7px;border-radius:5px;color:#FFD2B3}
+
+/* cinta de embalaje */
+.cinta{position:absolute;left:-40px;right:-40px;height:46px;transform:rotate(-2.2deg);
+  background:repeating-linear-gradient(135deg,rgba(200,149,95,.95) 0 26px,rgba(185,134,82,.95) 26px 52px);
+  box-shadow:0 6px 18px rgba(0,0,0,.35);display:flex;align-items:center;gap:60px;padding-left:80px;
+  font:700 16px var(--titulo);letter-spacing:.25em;color:rgba(40,25,10,.55);white-space:nowrap;overflow:hidden}
+
+/* tarjetas e iconos */
+.grilla{display:grid;gap:22px;margin-top:30px}
+.tarjeta{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px 26px 24px;position:relative}
+.tarjeta p{font-size:20px;line-height:1.45;color:var(--muted);margin-top:8px}
+.tarjeta h3 + .dato{margin-top:10px}
+.ico{width:76px;height:76px;border-radius:18px;display:grid;place-items:center;background:rgba(255,138,61,.12);color:var(--accent);margin-bottom:16px}
+.ico svg{width:44px;height:44px}
+.ico.g{width:112px;height:112px;border-radius:26px} .ico.g svg{width:66px;height:66px}
+.ico.t{background:rgba(46,196,182,.13);color:var(--support)}
+.ico.k{background:rgba(200,149,95,.16);color:var(--kraft)}
+.ico.r{background:rgba(255,77,94,.14);color:var(--c4)}
+.dato{font:700 64px/1 var(--titulo);letter-spacing:-.02em}
+.dato small{font-size:24px;color:var(--muted);font-weight:600;margin-left:6px}
+.pie{position:absolute;left:96px;right:96px;bottom:26px;display:flex;justify-content:space-between;color:var(--dim);font-size:15px}
+
+/* portada */
+.portada{justify-content:center}
+.portada .caja{position:absolute;right:110px;top:190px;width:380px;height:380px}
+.pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:10px 18px;font-size:19px;color:var(--muted);margin-right:12px}
+
+/* clases */
+.clases{display:flex;flex-direction:column;gap:14px;margin-top:26px}
+.clase{display:grid;grid-template-columns:300px 190px 1fr 130px;align-items:center;gap:20px;font-size:22px}
+.clase .nom{display:flex;align-items:center;gap:14px;font-weight:600}
+.clase .nom i{width:18px;height:18px;border-radius:5px;display:inline-block}
+.clase .rango{color:var(--muted)}
+.barra{height:30px;border-radius:8px;background:rgba(255,255,255,.05);overflow:hidden}
+.barra span{display:block;height:100%;border-radius:8px;transform-origin:left;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.clase .n{text-align:right;font:600 22px var(--titulo)}
+
+/* pipeline */
+.particion{display:grid;grid-template-columns:1fr 330px;gap:26px;margin-top:20px;align-items:stretch}
+.boveda{background:repeating-linear-gradient(45deg,rgba(255,255,255,.025) 0 12px,transparent 12px 24px),var(--card);
+  border:2px dashed var(--c4);border-radius:18px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.linea{position:relative;margin-top:6px}
+.linea .ruta{position:absolute;left:60px;right:60px;top:58px;height:0;border-top:3px dashed var(--line)}
+.estaciones{display:flex;justify-content:space-between;position:relative}
+.estacion{width:176px;text-align:center;position:relative}
+.estacion .ico{margin:0 auto 10px;width:116px;height:116px;border-radius:50%;border:2px solid var(--line);background:var(--card)}
+.estacion .ico svg{width:54px;height:54px}
+.estacion b{display:block;font:600 21px var(--titulo)}
+.estacion span{display:block;font-size:16px;color:var(--muted);margin-top:4px;line-height:1.35}
+.estacion.salta{opacity:.32}
+.estacion.salta .ico{border-style:dashed}
+.estacion.salta::after{content:"no aplica";position:absolute;top:44px;left:50%;transform:translateX(-50%) rotate(-8deg);
+  background:var(--c4);color:#fff;font:700 13px var(--titulo);letter-spacing:.12em;padding:3px 10px;border-radius:4px;text-transform:uppercase}
+.nombre-linea{font:700 17px var(--titulo);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:20px 0 14px}
+
+/* resultados */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px}
+.kpi.mejor{border:2px solid var(--accent);box-shadow:0 0 0 6px rgba(255,138,61,.08)}
+.kpi .tit{display:flex;align-items:center;gap:10px;font:600 21px var(--titulo)}
+.kpi .tit svg{width:30px;height:30px;color:var(--accent)}
+.kpi .grande{font:700 62px/1 var(--titulo);margin:16px 0 4px}
+.kpi .etq{font-size:15px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.kpi .fila{display:flex;justify-content:space-between;font-size:18px;color:var(--muted);margin-top:8px}
+.kpi .fila b{color:var(--text);font-weight:600}
+.sello{position:absolute;top:-14px;right:16px;background:var(--accent);color:#1A0F05;font:700 13px var(--titulo);letter-spacing:.12em;padding:5px 11px;border-radius:6px;text-transform:uppercase}
+
+/* matriz */
+.matriz-zona{display:grid;grid-template-columns:auto 1fr;gap:46px;margin-top:10px;align-items:start}
+.matriz{display:grid;grid-template-columns:150px repeat(5,94px);grid-auto-rows:78px;gap:5px;font-size:16px}
+.matriz .cab{display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-weight:600;line-height:1.2;padding:4px}
+.matriz .cab.fila{justify-content:flex-end;text-align:right;padding-right:12px}
+.celda{border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:600 20px var(--titulo);cursor:default;position:relative;transition:transform .15s}
+.celda small{font:500 13px var(--texto);opacity:.85}
+.celda:hover{transform:scale(1.07);z-index:2;outline:2px solid #fff}
+.celda.top{outline:3px solid var(--accent);outline-offset:-3px}
+#tip{position:fixed;pointer-events:none;background:#fff;color:#0B1622;font-size:15px;padding:8px 12px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.35);display:none;z-index:50;max-width:280px}
+.confusion{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:19px;margin-bottom:12px}
+.confusion .cnt{margin-left:auto;font:700 26px var(--titulo);color:var(--accent)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border-radius:999px;font-weight:600;font-size:17px;background:rgba(255,255,255,.06)}
+.chip i{width:12px;height:12px;border-radius:3px}
+
+/* notas */
+#notas{position:fixed;left:0;right:0;bottom:0;background:rgba(244,235,221,.97);color:#1D232B;padding:16px 28px 18px;font-size:17px;line-height:1.5;
+  transform:translateY(105%);transition:transform .25s;z-index:40;border-top:5px solid var(--kraft)}
+#notas.abierto{transform:none}
+#notas b{font-family:var(--titulo);text-transform:uppercase;letter-spacing:.1em;font-size:13px;color:var(--kraft2)}
+#contador{font:600 16px var(--titulo);color:var(--muted)}
+#ayuda{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:var(--card2);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13px;z-index:30;transition:opacity .6s}
+#ayuda.oculta{opacity:0;pointer-events:none}
+.notas{display:none}
+</style>
+</head>
+<body>
+<div id="escenario">
+
+  <div id="seguimiento">
+    <div class="etapa" data-etapa="0"><span class="punto"></span>Pedido recibido</div><div class="tramo" data-tramo="0"></div>
+    <div class="etapa" data-etapa="1"><span class="punto"></span>Preparación</div><div class="tramo" data-tramo="1"></div>
+    <div class="etapa" data-etapa="2"><span class="punto"></span>En ruta</div><div class="tramo" data-tramo="2"></div>
+    <div class="etapa" data-etapa="3"><span class="punto"></span>Entregado</div>
+  </div>
+
+  <!-- 1 · Portada -->
+  <section class="slide portada" data-etapa="0">
+    <div class="cinta" style="top:96px">FRÁGIL · MANIPULAR CON F1 MACRO · FRÁGIL · MANIPULAR CON F1 MACRO · FRÁGIL · MANIPULAR CON F1 MACRO · FRÁGIL</div>
+    <div class="etiqueta"><span class="num">Hito 1</span><span class="txt">Machine Learning Supervisado · UDD</span><span class="barras"></span></div>
+    <h1>¿Con qué nivel de retraso<br>llegará la entrega?</h1>
+    <p class="bajada" style="margin-top:22px;max-width:900px">Predecimos si un pedido llegará rápido, a tiempo o con retraso, y comparamos dos redes neuronales: una <b class="acento">MLP</b> y <b class="apoyo">TabPFN</b>.</p>
+    <div style="margin-top:38px">
+      <span class="pill" data-ico="usuario"></span>
+      <span class="pill" data-ico="paquete"></span>
+    </div>
+    <svg class="caja" viewBox="0 0 200 200" aria-hidden="true">
+      <polygon points="100,22 178,58 100,94 22,58" fill="#D9A971"/>
+      <polygon points="22,58 100,94 100,182 22,146" fill="#B98652"/>
+      <polygon points="178,58 100,94 100,182 178,146" fill="#A8743F"/>
+      <polygon points="61,40 139,76 139,92 61,56" fill="#E9CFA6" opacity=".9"/>
+      <rect x="112" y="118" width="52" height="30" rx="3" transform="skewY(-24.8) translate(0,58)" fill="#F4EBDD"/>
+      <g transform="skewY(-24.8) translate(0,58)" fill="#1D232B"><rect x="117" y="124" width="2" height="16"/><rect x="121" y="124" width="1" height="16"/><rect x="124" y="124" width="3" height="16"/><rect x="129" y="124" width="1" height="16"/><rect x="132" y="124" width="2" height="16"/><rect x="136" y="124" width="1" height="16"/><rect x="139" y="124" width="3" height="16"/><rect x="144" y="124" width="1" height="16"/><rect x="147" y="124" width="2" height="16"/><rect x="151" y="124" width="1" height="16"/><rect x="154" y="124" width="3" height="16"/></g>
+    </svg>
+    <aside class="notas">Presentamos el contexto del problema y luego recorremos el notebook en el orden del flujo. Cualquiera de los dos puede responder cualquier parte.</aside>
+  </section>
+
+  <!-- 2 · Industria y fuente -->
+  <section class="slide" data-etapa="0">
+    <div class="etiqueta"><span class="num">#01</span><span class="txt">Contexto · Industria y fuente</span><span class="barras"></span></div>
+    <h2>Logística de <span class="acento">última milla</span></h2>
+    <p class="bajada">El tramo de la tienda a la casa del cliente: el más caro de la cadena y el que más pesa en la experiencia de compra.</p>
+    <div class="grilla" style="grid-template-columns:repeat(3,1fr)">
+      <div class="tarjeta f"><div class="ico g" data-ico="tienda"></div><h3>Comercio electrónico</h3><p>Entregas de un marketplace en ciudades de la India, del 11 de febrero al 6 de abril de 2022.</p></div>
+      <div class="tarjeta f"><div class="ico g t" data-ico="base"></div><h3>Tamaño</h3><div class="dato" data-v="n_filas"></div><p>entregas, una por fila.</p></div>
+      <div class="tarjeta f"><div class="ico g k" data-ico="libro"></div><h3>Fuente pública</h3><p><i>Amazon Delivery Dataset</i>, publicado en Kaggle (2024) con licencia libre (MIT). No son cifras oficiales de Amazon.</p></div>
+    </div>
+    <aside class="notas">Los datos son de Kaggle, licencia MIT. La página no dice de dónde salen, así que no los presentamos como cifras oficiales de Amazon. No hay duplicados ni siquiera sin contar el Order_ID.</aside>
+  </section>
+
+  <!-- 3 · Fila y variables -->
+  <section class="slide" data-etapa="0">
+    <div class="etiqueta"><span class="num">#02</span><span class="txt">Contexto · Qué es cada fila</span><span class="barras"></span></div>
+    <h2>Cada fila es un <span class="acento">pedido entregado</span></h2>
+    <p class="bajada">Solo lo que se sabe al retirar el pedido. Los minutos de entrega no se usan: son la respuesta.</p>
+    <div class="grilla" style="grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px">
+      <div class="tarjeta f"><div class="ico" data-ico="usuario"></div><h3>Repartidor</h3><p>Edad y calificación (1 a 5)</p></div>
+      <div class="tarjeta f"><div class="ico t" data-ico="ruta"></div><h3>Distancia</h3><p>Km entre la tienda y el cliente, calculados con las coordenadas</p></div>
+      <div class="tarjeta f"><div class="ico k" data-ico="reloj"></div><h3>Tiempos</h3><p>Hora del pedido, minutos de espera hasta el retiro y día de la semana</p></div>
+      <div class="tarjeta f"><div class="ico r" data-ico="semaforo"></div><h3>Tráfico</h3><p>Bajo, medio, alto o atasco</p></div>
+      <div class="tarjeta f"><div class="ico t" data-ico="nube"></div><h3>Clima</h3><p>Soleado, nublado, niebla, viento, tormenta, arena</p></div>
+      <div class="tarjeta f"><div class="ico" data-ico="moto"></div><h3>Vehículo</h3><p>Moto, scooter, van o bicicleta</p></div>
+      <div class="tarjeta f"><div class="ico k" data-ico="edificio"></div><h3>Zona</h3><p>Metropolitana, urbana, semiurbana u otra</p></div>
+      <div class="tarjeta f"><div class="ico" data-ico="etiqueta"></div><h3>Producto</h3><p>16 categorías, como electrónica, supermercado o libros</p></div>
+    </div>
+    <aside class="notas">Doce columnas crudas que el pipeline convierte en <span data-v="n_vars"></span> variables. Las coordenadas, fechas y horas originales se resumen en distancia, hora del pedido, espera de retiro y día de la semana.</aside>
+  </section>
+
+  <!-- 4 · Clases -->
+  <section class="slide" data-etapa="0">
+    <div class="etiqueta"><span class="num">#03</span><span class="txt">Contexto · Qué predecimos</span><span class="barras"></span></div>
+    <h2>5 niveles de retraso</h2>
+    <p class="bajada">Los armamos con los minutos de entrega. Suponemos que la empresa promete entregar en <b class="acento">2 horas</b>; desde ahí, cada media hora extra sube un nivel.</p>
+    <div class="clases" id="clases"></div>
+    <p class="bajada f" style="margin-top:28px;font-size:22px"><span class="acento">Clases desiguales:</span> hay 3,5 veces más pedidos "A tiempo" que "Rápida". Por eso medimos con <b>F1 macro</b>, que da el mismo peso a cada clase, y la MLP usa <b>SMOTE</b> para equilibrarlas.</p>
+    <aside class="notas">Los cortes son de negocio y no se eligieron mirando al modelo. Como las clases son enteros 0 a 4 desde el inicio, no hizo falta LabelEncoder.</aside>
+  </section>
+
+  <!-- 5 · Utilidad -->
+  <section class="slide" data-etapa="0">
+    <div class="etiqueta"><span class="num">#04</span><span class="txt">Contexto · Para qué sirve</span><span class="barras"></span></div>
+    <h2>Anticipar el <span style="color:var(--c4)">retraso crítico</span> al retirar el pedido</h2>
+    <p class="bajada">Más de 3 horas significa reclamos, reembolsos y clientes que no vuelven.</p>
+    <div class="grilla" style="grid-template-columns:repeat(4,1fr)">
+      <div class="tarjeta f"><div class="ico g" data-ico="campana"></div><h3>Avisar antes</h3><p>Informar al cliente una hora realista de llegada.</p></div>
+      <div class="tarjeta f"><div class="ico g t" data-ico="cambio"></div><h3>Reasignar</h3><p>Cambiar repartidor o vehículo en los pedidos de riesgo.</p></div>
+      <div class="tarjeta f"><div class="ico g r" data-ico="diana"></div><h3>Priorizar</h3><p>Atender primero los pedidos con mayor probabilidad de retraso crítico.</p></div>
+      <div class="tarjeta f"><div class="ico g k" data-ico="calendario"></div><h3>Planificar</h3><p>Decidir cuántos repartidores poner por zona, horario y clima.</p></div>
+    </div>
+    <aside class="notas">Esta es la base del Hito 2: el simulador what-if y el plan priorizado con capacidad limitada.</aside>
+  </section>
+
+  <!-- 6 · Exploración -->
+  <section class="slide" data-etapa="1">
+    <div class="etiqueta"><span class="num">#05</span><span class="txt">Preparación · Exploración</span><span class="barras"></span></div>
+    <h2>Datos revisados, <span class="apoyo">limpiados dentro del pipeline</span></h2>
+    <p class="bajada">No editamos el archivo a mano: cada corrección es un paso del pipeline, como el <code>np.abs</code> de <code>experiencia</code> que vimos en clases.</p>
+    <div class="grilla" style="grid-template-columns:repeat(4,1fr)">
+      <div class="tarjeta f"><div class="ico g t" data-ico="copias"></div><h3>Pedidos repetidos</h3><div class="dato">0</div><p>Cada pedido aparece una sola vez. Ningún caso de test está copiado en el entrenamiento.</p></div>
+      <div class="tarjeta f"><div class="ico g k" data-ico="hueco"></div><h3>Datos vacíos</h3><div class="dato" data-v="n_falt_filas"></div><p>pedidos sin calificación del repartidor (<span data-v="n_falt_rating"></span>) o sin clima (<span data-v="n_falt_clima"></span>). El pipeline los rellena.</p></div>
+      <div class="tarjeta f"><div class="ico g" data-ico="estrella"></div><h3>Nota imposible</h3><div class="dato" data-v="n_rating6"></div><p>repartidores con nota 6, cuando la escala llega a 5. El pipeline la deja en 5.</p></div>
+      <div class="tarjeta f"><div class="ico g r" data-ico="pin"></div><h3>Ubicación mal escrita</h3><div class="dato" data-v="n_coord"></div><p>tiendas con la coordenada en negativo o en 0. Se corrige el signo antes de medir la distancia.</p></div>
+    </div>
+    <aside class="notas">Revisamos tipos, faltantes, duplicados y balance. El riesgo de los duplicados es que una copia quede en train y otra en test, lo que inflaría el F1. Aquí no ocurre.</aside>
+  </section>
+
+  <!-- 7 · Flujo sin fuga -->
+  <section class="slide" data-etapa="1">
+    <div class="etiqueta"><span class="num">#06</span><span class="txt">Preparación · Flujo sin fuga de datos</span><span class="barras"></span></div>
+    <h2>Primero se parte, <span class="acento">después se transforma</span></h2>
+    <div class="particion">
+      <div class="tarjeta f" style="display:flex;gap:26px;align-items:center">
+        <div class="ico g t" data-ico="particion" style="margin:0;flex:none"></div>
+        <div><h3>Partición estratificada 80 / 20</h3>
+        <p style="font-size:21px"><b style="color:var(--text)" data-v="n_train"></b> pedidos para entrenar y <b style="color:var(--text)" data-v="n_test"></b> para test, con la misma proporción de cada clase (<code>stratify=y</code>). La validación cruzada usa solo los de entrenamiento.</p></div>
+      </div>
+      <div class="boveda f"><div class="ico g r" data-ico="candado" style="margin-bottom:10px"></div><h3>Test en bóveda</h3><p style="font-size:17px;color:var(--muted);margin-top:6px">No se mira hasta la evaluación final</p></div>
+    </div>
+    <p class="bajada f" style="margin-top:24px;font-size:22px">Rellenar vacíos, codificar, SMOTE y escalar van <b class="acento">dentro del pipeline</b>. Así cada paso aprende <b>solo de los datos de entrenamiento</b> y el test nunca influye en el modelo: no hay fuga de datos.</p>
+    <aside class="notas">Si se escala o se aplica SMOTE antes de partir, la información del test se filtra al entrenamiento y las métricas salen optimistas. SMOTE va en un Pipeline de imblearn para que solo se aplique al ajustar y nunca al predecir.</aside>
+  </section>
+
+  <!-- 8 · Pipelines -->
+  <section class="slide" data-etapa="2">
+    <div class="etiqueta"><span class="num">#07</span><span class="txt">En ruta · Los dos pipelines</span><span class="barras"></span></div>
+    <h2>La misma ruta, <span class="apoyo">con dos paradas menos</span> en TabPFN</h2>
+    <div class="nombre-linea">Red MLP</div>
+    <div class="linea f"><div class="ruta"></div><div class="estaciones" id="linea-mlp"></div></div>
+    <div class="nombre-linea" style="margin-top:30px">TabPFN</div>
+    <div class="linea f"><div class="ruta"></div><div class="estaciones" id="linea-pfn"></div></div>
+    <p class="bajada f" style="font-size:20px;margin-top:14px">TabPFN se salta SMOTE y el escalado: no entrena pesos con nuestros datos y ya aprendió a manejar clases desiguales y escalas distintas.</p>
+    <aside class="notas">Los dos reciben las mismas variables. TabPFN no lleva SMOTE: lee las proporciones reales del contexto y el desbalance se corrige en la salida con balance_probabilities. Tampoco lleva escalado: no entrena pesos y normaliza internamente en cada estimador.</aside>
+  </section>
+
+  <!-- 9 · MLP -->
+  <section class="slide" data-etapa="2">
+    <div class="etiqueta"><span class="num">#08</span><span class="txt">En ruta · Red MLP</span><span class="barras"></span></div>
+    <h2>MLP: aprende pesos <span class="acento">desde cero</span></h2>
+    <div class="grilla" style="grid-template-columns:1fr 1fr;gap:26px">
+      <div class="tarjeta f"><div class="ico" data-ico="red"></div><h3>Base</h3>
+        <p>Dos capas ocultas, de 32 y 16 neuronas. La salida tiene <b style="color:var(--text)">5 neuronas, una por clase</b>, y elige la de mayor probabilidad.</p>
+        <p>Se evalúa con validación cruzada en 5 partes.</p></div>
+      <div class="tarjeta f"><div class="ico t" data-ico="dados"></div><h3>Ajustada</h3>
+        <p>Probamos 20 combinaciones al azar de capas, activación, regularización, tasa de aprendizaje y tamaño de lote (<code>RandomizedSearchCV</code>).</p>
+        <p>Ganó: <b style="color:var(--text)" data-v="mlp_params"></b></p></div>
+    </div>
+    <div class="kpis f" id="kpis-mlp" style="grid-template-columns:1fr 1fr"></div>
+    <aside class="notas">Pasar a multiclase en la MLP solo cambió la métrica (f1_macro) y la lectura de predict_proba, que ahora tiene 5 columnas. MLPClassifier crea solo las 5 salidas con softmax.</aside>
+  </section>
+
+  <!-- 10 · TabPFN -->
+  <section class="slide" data-etapa="2">
+    <div class="etiqueta"><span class="num">#09</span><span class="txt">En ruta · TabPFN</span><span class="barras"></span></div>
+    <h2>TabPFN: ya viene <span class="apoyo">preentrenado</span></h2>
+    <div class="grilla" style="grid-template-columns:repeat(3,1fr);gap:20px;margin-top:22px">
+      <div class="tarjeta f"><div class="ico g t" data-ico="chispas"></div><h3>Preentrenado</h3><p>Prior Labs lo entrenó con millones de tablas inventadas. No vuelve a entrenarse con nuestros datos.</p></div>
+      <div class="tarjeta f"><div class="ico g" data-ico="libro"></div><h3>Aprende en contexto</h3><p><code>fit</code> solo guarda nuestros datos; <code>predict</code> los lee junto con los pedidos nuevos y responde de una vez.</p></div>
+      <div class="tarjeta f"><div class="ico g k" data-ico="grilla"></div><h3>Atención</h3><p>Compara cada variable con las demás de su fila, y cada pedido con los pedidos parecidos del entrenamiento.</p></div>
+    </div>
+    <div class="grilla f" style="grid-template-columns:1.1fr 1fr 1fr;gap:20px;margin-top:20px">
+      <div class="tarjeta"><h3>Ajustado</h3><p>Probamos 4 combinaciones: 4 u 8 pasadas, con y sin corrección del desbalance (<code>GridSearchCV</code>).</p><p>Ganó: <b style="color:var(--text)" data-v="pfn_params"></b></p></div>
+      <div class="kpi" id="kpi-pfn-base"></div>
+      <div class="kpi" id="kpi-pfn-ajus"></div>
+    </div>
+    <aside class="notas">balance_probabilities=True corrige las probabilidades según la proporción de cada clase en el entrenamiento: sube la de las clases con pocos casos y baja la de las que tienen muchos. Solo cambia la salida. Límites según la clase: TabPFN-3 admite 1 millón de filas con hasta 200 variables, o 100.000 filas con 2.000 variables, y hasta 160 clases. Usamos <span data-v="n_train"></span> filas, <span data-v="n_vars"></span> variables y 5 clases.</aside>
+  </section>
+
+  <!-- 11 · Resultados -->
+  <section class="slide" data-etapa="3">
+    <div class="etiqueta"><span class="num">#10</span><span class="txt">Entregado · Comparación final</span><span class="barras"></span></div>
+    <h2 id="tit-resultados"></h2>
+    <div class="kpis f" id="kpis"></div>
+    <div class="f" style="margin-top:24px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:center">
+      <svg id="barras" viewBox="0 0 1040 250" style="width:100%;height:250px"></svg>
+      <p class="bajada" style="font-size:19px" id="lectura-resultados"></p>
+    </div>
+    <aside class="notas">El mejor modelo se elige por F1 macro de validación cruzada, no por test, para no escoger con los datos de prueba. El F1 de entrenamiento se mide sobre una muestra fija de 7.000 filas de train para los cuatro modelos. En TabPFN casi todo el tiempo está en la predicción.</aside>
+  </section>
+
+  <!-- 12 · Matriz -->
+  <section class="slide" data-etapa="3">
+    <div class="etiqueta"><span class="num">#11</span><span class="txt">Entregado · Matriz de confusión 5 × 5</span><span class="barras"></span></div>
+    <h2>¿Dónde se equivoca <span class="acento" data-v="mejor"></span>?</h2>
+    <div class="matriz-zona">
+      <div>
+        <div class="matriz f" id="matriz"></div>
+        <p style="color:var(--dim);font-size:15px;margin-top:10px">Cada fila es la clase real y cada columna lo que predijo el modelo. La diagonal son los aciertos.</p>
+      </div>
+      <div class="f">
+        <h3 style="margin-bottom:6px">Las 3 confusiones más frecuentes</h3><p style="color:var(--muted);font-size:18px;margin-bottom:14px">Casi siempre confunde niveles vecinos, separados por solo 30 minutos.</p>
+        <div id="confusiones"></div>
+        <div class="tarjeta" style="margin-top:16px;border-color:rgba(255,77,94,.5)"><h3 style="color:var(--c4)">El error más costoso</h3><p id="error-costoso"></p></div>
+      </div>
+    </div>
+    <aside class="notas">Las clases vecinas se confunden más porque sus cortes están a solo 30 minutos. El error más caro es predecir que un retraso crítico llega a tiempo: la empresa no actúa y el cliente espera más de 3 horas.</aside>
+  </section>
+
+  <!-- 13 · Cierre -->
+  <section class="slide" data-etapa="3">
+    <div class="cinta" style="bottom:62px;top:auto;transform:rotate(1.2deg)">ENTREGADO · HITO 1 · ENTREGADO · HITO 1 · ENTREGADO · HITO 1 · ENTREGADO · HITO 1 · ENTREGADO</div>
+    <div class="etiqueta"><span class="num">#12</span><span class="txt">Entregado · Conclusión</span><span class="barras"></span></div>
+    <h2 id="tit-cierre"></h2>
+    <div class="grilla" style="grid-template-columns:repeat(3,1fr)">
+      <div class="tarjeta f"><div class="ico g" data-ico="trofeo"></div><h3>Resultado</h3><p id="cierre-1"></p></div>
+      <div class="tarjeta f"><div class="ico g t" data-ico="reloj"></div><h3>Costo</h3><p id="cierre-2"></p></div>
+      <div class="tarjeta f"><div class="ico g k" data-ico="bandera"></div><h3>Hito 2</h3><p>Un simulador para probar escenarios y un plan para atender primero los pedidos con más riesgo de retraso crítico, con su retorno en pesos.</p></div>
+    </div>
+    <p style="color:var(--dim);font-size:15px;margin-top:26px;max-width:1100px">Declaración de uso de IA: se usó asistencia de IA (Claude) para revisar la estructura del notebook, depurar código y preparar esta presentación. El grupo verificó cada resultado y responde por cada decisión.</p>
+    <aside class="notas">Cerrar con la recomendación y abrir las preguntas. Tener a mano PREGUNTAS_DEFENSA.md y el notebook ejecutado.</aside>
+  </section>
+
+  <div class="pie"><span>Grupo 14 · Joaquín Rivas · Matías Ortega · MLP vs. TabPFN</span><span id="contador"></span></div>
+</div>
+
+<div id="tip"></div>
+<div id="notas"><b>Notas del orador</b><div id="notas-txt"></div></div>
+<div id="ayuda">← → o espacio para avanzar · N notas del orador · F pantalla completa</div>
+
+<script>
+const DATA = {"n_filas": 43739, "n_train": 34991, "n_test": 8748, "n_vars": 37, "n_falt_filas": 145, "n_falt_rating": 54, "n_falt_clima": 91, "n_rating6": 53, "n_coord": 3693, "clases": [{"nombre": "Rápida", "rango": "hasta 60 min", "casos": 4725, "pct": 10.802716111479457}, {"nombre": "A tiempo", "rango": "61 a 120 min", "casos": 16622, "pct": 38.002697821166464}, {"nombre": "Retraso leve", "rango": "121 a 150 min", "casos": 10197, "pct": 23.313290198678523}, {"nombre": "Retraso moderado", "rango": "151 a 180 min", "casos": 5786, "pct": 13.228468872173574}, {"nombre": "Retraso crítico", "rango": "más de 180 min", "casos": 6409, "pct": 14.652826996501977}], "modelos": [{"nombre": "MLP base", "f1_cv": 0.6125, "f1_train": 0.6642, "f1_test": 0.6213, "tiempo_s": 18.263, "pred_s": 0.0216}, {"nombre": "MLP ajustada", "f1_cv": 0.6192, "f1_train": 0.6498, "f1_test": 0.6187, "tiempo_s": 271.8045, "pred_s": 0.0206}, {"nombre": "TabPFN base", "f1_cv": 0.647, "f1_train": 0.6587, "f1_test": 0.6496, "tiempo_s": 520.2671, "pred_s": 272.6059}, {"nombre": "TabPFN ajustado", "f1_cv": 0.6478, "f1_train": 0.6582, "f1_test": 0.6502, "tiempo_s": 1516.8739, "pred_s": 144.5695}], "mejor": "TabPFN ajustado", "matriz": [[544, 398, 0, 0, 3], [0, 2847, 473, 1, 4], [0, 844, 1093, 17, 85], [0, 64, 325, 436, 332], [0, 19, 114, 168, 981]], "mlp_params": "capas (32, 16), tanh, alpha 0,00015, tasa 0,00017, lote 32", "pfn_params": "4 pasadas, sin corrección del desbalance", "titulo_resultados": "<span class='apoyo'>TabPFN</span> gana por 2,9 puntos de F1 macro en test", "lectura_resultados": "Ajustar casi no cambió el resultado: <b>−0,26 puntos</b> en la MLP y <b>+0,06 puntos</b> en TabPFN. Ningún modelo memoriza: entrenamiento y test difieren en menos de 0,05. Elegimos el mejor por validación cruzada: <b class='acento'>TabPFN ajustado</b>.", "titulo_cierre": "Recomendamos <span class='apoyo'>TabPFN ajustado</span>", "cierre_1": "F1 macro de <b style='color:var(--text)'>0,650</b> en test, contra 0,621 de la mejor MLP.", "cierre_2": "TabPFN necesita menos código, pero es más lento: ajustarlo tomó 25 min, contra 4,5 min de la MLP."};
+
+const ICONOS = {
+  paquete:'<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="m3 7.5 9 4.5 9-4.5M12 12v9M7.5 5.2l9 4.6"/>',
+  tienda:'<path d="M3 9.5 4.6 4h14.8L21 9.5"/><path d="M3 9.5h18c0 1.7-1.4 3-3 3s-3-1.3-3-3c0 1.7-1.4 3-3 3s-3-1.3-3-3c0 1.7-1.4 3-3 3s-3-1.3-3-3Z"/><path d="M5 12.3V20h14v-7.7M10 20v-5h4v5"/>',
+  base:'<ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  libro:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3M8 7h8M8 11h6"/>',
+  usuario:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.6-6.5 8-6.5s8 2.3 8 6.5"/>',
+  ruta:'<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5" stroke-dasharray="2.5 2.5"/>',
+  reloj:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+  semaforo:'<rect x="7.5" y="2" width="9" height="20" rx="3"/><circle cx="12" cy="7" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="17" r="1.6"/>',
+  nube:'<path d="M7 18.5h10.5a4 4 0 0 0 .6-7.96A6.5 6.5 0 0 0 5.6 10 4.3 4.3 0 0 0 7 18.5Z"/>',
+  moto:'<circle cx="5.5" cy="17" r="3"/><circle cx="18.5" cy="17" r="3"/><path d="M8.5 17h5l3-6h-4l-2 3M14 7h3l1.5 4M3 12h5l2 2"/>',
+  edificio:'<path d="M4 21V8l6-4v17M10 21h10V10l-6-2"/><path d="M2 21h20M7 10v.01M7 14v.01M7 18v.01M14 13h2M14 17h2"/>',
+  etiqueta:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  campana:'<path d="M6 9a6 6 0 0 1 12 0c0 6.5 3 8 3 8H3s3-1.5 3-8Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>',
+  cambio:'<path d="M4 7h13l-3-3M20 17H7l3 3"/>',
+  diana:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3"/>',
+  calendario:'<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M7.5 13.5h2M11 13.5h2M14.5 13.5h2M7.5 17h2M11 17h2"/>',
+  copias:'<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+  hueco:'<circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.4M12 17v.01"/>',
+  estrella:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+  pin:'<path d="M12 21.5s7-6.6 7-12a7 7 0 1 0-14 0c0 5.4 7 12 7 12Z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  particion:'<path d="M12 3v6M12 9 5 15.5V21M12 9l7 6.5V21"/><circle cx="5" cy="21" r=".6"/><circle cx="19" cy="21" r=".6"/>',
+  candado:'<rect x="4.5" y="10.5" width="15" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5M12 14.5v2.5"/>',
+  varita:'<path d="m4 20 11-11M14 4v3M12.5 5.5h3M19 9v3M17.5 10.5h3M18 3l.01.01"/><path d="m13 8 3 3"/>',
+  imputar:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/><path d="M15 9h6v6h-6z" fill="currentColor" fill-opacity=".35"/>',
+  codificar:'<path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/>',
+  capas:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/><path d="m3 17.5 9 5 9-5" opacity=".5"/>',
+  escala:'<path d="M4 20h16M7 20v-9M12 20V4M17 20v-6"/>',
+  red:'<circle cx="4.5" cy="7" r="1.8"/><circle cx="4.5" cy="17" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19.5" cy="12" r="1.8"/><path d="M6.2 7.4 10.3 5.3M6.2 7.6l4.2 3.8M6.2 16.4l4.2-3.8M6.2 16.6l4.1 2.1M13.7 5.6l4.3 5.2M13.8 12h3.9M13.7 18.4l4.3-5.2"/>',
+  chispas:'<path d="M12 3c.6 3.8 2.2 5.4 6 6-3.8.6-5.4 2.2-6 6-.6-3.8-2.2-5.4-6-6 3.8-.6 5.4-2.2 6-6Z"/><path d="M19 15c.3 1.7 1 2.4 2.7 2.7-1.7.3-2.4 1-2.7 2.7-.3-1.7-1-2.4-2.7-2.7 1.7-.3 2.4-1 2.7-2.7Z"/>',
+  grilla:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/><path d="M12 9v6M9 12h6" stroke-width="2.6"/>',
+  dados:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="16" cy="8" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="8" cy="16" r="1.2" fill="currentColor"/><circle cx="16" cy="16" r="1.2" fill="currentColor"/>',
+  trofeo:'<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/>',
+  bandera:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+  cronometro:'<circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 1.5M10 2.5h4M18.5 6.5l1.5-1.5"/>',
+  modelo:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9zM9 2v2M15 2v2M9 20v2M15 20v2M2 9h2M2 15h2M20 9h2M20 15h2"/>'
+};
+function svg(nombre){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(ICONOS[nombre]||'')+'</svg>';}
+const fmt = (x,d=3) => Number(x).toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d});
+const ent = x => Number(x).toLocaleString('es-CL');
+const seg = s => s<90 ? fmt(s,0)+' s' : fmt(s/60,1)+' min';
+const COLORES = ['var(--c0)','var(--c1)','var(--c2)','var(--c3)','var(--c4)'];
+
+// iconos y valores simples
+document.querySelectorAll('[data-ico]').forEach(e=>{
+  if(e.classList.contains('pill')){
+    const txt = e.dataset.ico==='usuario' ? 'Grupo 14 · Joaquín Rivas · Matías Ortega' : 'Amazon Delivery Dataset · '+ent(DATA.n_filas)+' entregas';
+    e.innerHTML = '<span style="width:24px;height:24px;color:var(--accent)">'+svg(e.dataset.ico)+'</span>'+txt;
+  } else e.innerHTML = svg(e.dataset.ico);
+});
+const valores = {n_filas:ent(DATA.n_filas), n_train:ent(DATA.n_train), n_test:ent(DATA.n_test), n_vars:DATA.n_vars,
+                 n_falt_filas:ent(DATA.n_falt_filas), n_falt_rating:ent(DATA.n_falt_rating), n_falt_clima:ent(DATA.n_falt_clima),
+                 n_rating6:ent(DATA.n_rating6), n_coord:ent(DATA.n_coord),
+                 mlp_params:DATA.mlp_params, pfn_params:DATA.pfn_params, mejor:DATA.mejor};
+document.querySelectorAll('[data-v]').forEach(e=>{ e.textContent = valores[e.dataset.v]; });
+
+// clases
+const maxCasos = Math.max(...DATA.clases.map(c=>c.casos));
+document.getElementById('clases').innerHTML = DATA.clases.map((c,i)=>
+  `<div class="clase f"><span class="nom"><i style="background:${COLORES[i]}"></i>${i} · ${c.nombre}</span><span class="rango">${c.rango}</span>
+   <div class="barra"><span style="background:${COLORES[i]};transform:scaleX(${c.casos/maxCasos})"></span></div>
+   <span class="n">${ent(c.casos)} <small style="color:var(--muted);font-weight:500">${fmt(c.pct,1)}%</small></span></div>`).join('');
+
+// pipelines
+const pasos = [
+  ['varita','Variables','corrige y calcula distancia'],
+  ['imputar','Rellenar','completa los vacíos'],
+  ['codificar','Codificar','texto a números'],
+  ['capas','SMOTE','crea casos de las clases chicas'],
+  ['escala','Escalar','todo en la misma escala'],
+  ['modelo','Modelo','']
+];
+function linea(id, modelo, salta){
+  document.getElementById(id).innerHTML = pasos.map((p,i)=>{
+    const ultimo = i===pasos.length-1, s = salta.includes(i);
+    return `<div class="estacion ${s?'salta':''}"><div class="ico ${ultimo?'':'t'}" style="${ultimo?'border-color:var(--accent)':''}">${svg(ultimo?(modelo==='MLP'?'red':'chispas'):p[0])}</div>
+      <b>${ultimo?modelo:p[1]}</b><span>${ultimo?(modelo==='MLP'?'MLPClassifier':'TabPFNClassifier'):p[2]}</span></div>`;}).join('');
+}
+linea('linea-mlp','MLP',[]); linea('linea-pfn','TabPFN',[3,4]);
+
+// tarjetas KPI
+const M = Object.fromEntries(DATA.modelos.map(m=>[m.nombre,m]));
+function kpi(m, mejor){
+  return `<div class="kpi ${mejor?'mejor':''}" style="position:relative">${mejor?'<span class="sello">Mejor en CV</span>':''}
+    <div class="tit">${svg(m.nombre.startsWith('MLP')?'red':'chispas')}${m.nombre}</div>
+    <div class="grande">${fmt(m.f1_test)}</div><div class="etq">F1 macro test</div>
+    <div class="fila"><span>Validación cruzada</span><b>${fmt(m.f1_cv)}</b></div>
+    <div class="fila"><span>Entrenamiento</span><b>${fmt(m.f1_train)}</b></div>
+    <div class="fila"><span>${svg('cronometro').replace('<svg','<svg style="width:18px;height:18px;vertical-align:-3px;margin-right:6px"')}Tiempo total</span><b>${seg(m.tiempo_s)}</b></div></div>`;
+}
+document.getElementById('kpis').innerHTML = DATA.modelos.map(m=>kpi(m, m.nombre===DATA.mejor)).join('');
+document.getElementById('kpis-mlp').innerHTML = kpi(M['MLP base']) + kpi(M['MLP ajustada']);
+document.getElementById('kpi-pfn-base').outerHTML = kpi(M['TabPFN base']);
+document.getElementById('kpi-pfn-ajus').outerHTML = kpi(M['TabPFN ajustado']);
+
+// barras agrupadas CV / train / test
+(function(){
+  const s = document.getElementById('barras'), W=1040, H=250, base=210, alto=180;
+  const series=[['f1_cv','Validación cruzada','#5F7690'],['f1_train','Entrenamiento','var(--support)'],['f1_test','Test','var(--accent)']];
+  let h='';
+  [0,.25,.5,.75,1].forEach(v=>{const y=base-v*alto; h+=`<line x1="40" x2="${W}" y1="${y}" y2="${y}" stroke="#25415E" stroke-width="1"/><text x="30" y="${y+5}" fill="#93A7BC" font-size="13" text-anchor="end">${fmt(v,2)}</text>`;});
+  const ancho=(W-60)/DATA.modelos.length;
+  DATA.modelos.forEach((m,i)=>{
+    const x0=60+i*ancho+ancho*.14;
+    series.forEach((se,j)=>{const v=m[se[0]], x=x0+j*ancho*.24, hgt=v*alto;
+      h+=`<rect x="${x}" y="${base-hgt}" width="${ancho*.21}" height="${hgt}" rx="5" fill="${se[2]}"/><text x="${x+ancho*.105}" y="${base-hgt-7}" fill="#E8EEF4" font-size="13" font-weight="600" text-anchor="middle">${fmt(v,2)}</text>`;});
+    h+=`<text x="${x0+ancho*.33}" y="${base+26}" fill="#E8EEF4" font-size="16" font-weight="600" text-anchor="middle">${m.nombre}</text>`;
+  });
+  series.forEach((se,j)=>{h+=`<rect x="${60+j*200}" y="0" width="14" height="14" rx="3" fill="${se[2]}"/><text x="${80+j*200}" y="12" fill="#93A7BC" font-size="14">${se[1]}</text>`;});
+  s.innerHTML=h;
+})();
+document.getElementById('tit-resultados').innerHTML = DATA.titulo_resultados;
+document.getElementById('lectura-resultados').innerHTML = DATA.lectura_resultados;
+
+// matriz de confusion
+(function(){
+  const mz = DATA.matriz, n = DATA.clases.map(c=>c.nombre), cont = document.getElementById('matriz');
+  let h = '<div></div>' + n.map((x,j)=>`<div class="cab" style="color:${COLORES[j]}">${x}</div>`).join('');
+  const fuera = [];
+  mz.forEach((fila,i)=>fila.forEach((v,j)=>{ if(i!==j) fuera.push([v,i,j]); }));
+  fuera.sort((a,b)=>b[0]-a[0]); const top = fuera.slice(0,3).map(t=>t[1]+'-'+t[2]);
+  mz.forEach((fila,i)=>{
+    const tot = fila.reduce((a,b)=>a+b,0);
+    h += `<div class="cab fila" style="color:${COLORES[i]}">${n[i]}</div>`;
+    fila.forEach((v,j)=>{
+      const p = v/tot, diag = i===j;
+      const fondo = diag ? `rgba(46,196,182,${.15+p*.85})` : `rgba(255,138,61,${Math.min(.12+p*1.6,.95)})`;
+      const color = (diag && p>.45) || (!diag && p>.3) ? '#0B1622' : '#E8EEF4';
+      h += `<div class="celda ${top.includes(i+'-'+j)?'top':''}" style="background:${fondo};color:${color}" data-tip="Real <b>${n[i]}</b> → predicho <b>${n[j]}</b><br>${ent(v)} casos · ${fmt(p*100,1)}% de la fila">${fmt(p*100,0)}%<small>${ent(v)}</small></div>`;
+    });
+  });
+  cont.innerHTML = h;
+  document.getElementById('confusiones').innerHTML = fuera.slice(0,3).map(([v,i,j])=>
+    `<div class="confusion"><span class="chip"><i style="background:${COLORES[i]}"></i>${n[i]}</span>→<span class="chip"><i style="background:${COLORES[j]}"></i>${n[j]}</span><span class="cnt">${ent(v)}</span></div>`).join('');
+  const tot4 = mz[4].reduce((a,b)=>a+b,0), pasa = mz[4][0]+mz[4][1];
+  document.getElementById('error-costoso').innerHTML = `Decir que llega <b style="color:var(--text)">rápido o a tiempo</b> cuando llegará con <b style="color:var(--c4)">más de 3 horas de retraso</b>: la empresa no hace nada. Pasa en ${ent(pasa)} de ${ent(tot4)} casos (${fmt(pasa/tot4*100,1)}%). El modelo detecta el ${fmt(mz[4][4]/tot4*100,1)}% de los retrasos críticos.`;
+  const tip = document.getElementById('tip');
+  cont.addEventListener('mousemove',e=>{const c=e.target.closest('.celda'); if(!c){tip.style.display='none';return;}
+    tip.innerHTML=c.dataset.tip; tip.style.display='block'; tip.style.left=(e.clientX+16)+'px'; tip.style.top=(e.clientY+16)+'px';});
+  cont.addEventListener('mouseleave',()=>tip.style.display='none');
+})();
+document.getElementById('tit-cierre').innerHTML = DATA.titulo_cierre;
+document.getElementById('cierre-1').innerHTML = DATA.cierre_1;
+document.getElementById('cierre-2').innerHTML = DATA.cierre_2;
+
+// navegacion
+const slides=[...document.querySelectorAll('.slide')];
+let actual=0, paso=0;
+function fragmentos(){return [...slides[actual].querySelectorAll('.f')];}
+function mostrar(i, alFinal){
+  slides.forEach(s=>s.classList.remove('activa'));
+  actual=Math.max(0,Math.min(slides.length-1,i)); slides[actual].classList.add('activa');
+  const fr=fragmentos(); paso = alFinal ? fr.length : 0;
+  fr.forEach((f,k)=>f.classList.toggle('visible',k<paso));
+  const et=+slides[actual].dataset.etapa;
+  document.querySelectorAll('.etapa').forEach(e=>{const k=+e.dataset.etapa; e.classList.toggle('hecha',k<et); e.classList.toggle('actual',k===et);});
+  document.querySelectorAll('.tramo').forEach(t=>t.classList.toggle('hecho',+t.dataset.tramo<et));
+  document.getElementById('contador').textContent=(actual+1)+' / '+slides.length;
+  const nt=slides[actual].querySelector('.notas'); document.getElementById('notas-txt').innerHTML=nt?nt.innerHTML:'';
+  try{history.replaceState(null,'','#'+(actual+1));}catch(e){}
+}
+function avanzar(){const fr=fragmentos(); if(paso<fr.length){fr[paso].classList.add('visible');paso++;} else if(actual<slides.length-1) mostrar(actual+1);}
+function retroceder(){const fr=fragmentos(); if(paso>0){paso--;fr[paso].classList.remove('visible');} else if(actual>0) mostrar(actual-1,true);}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();avanzar();}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();retroceder();}
+  else if(e.key==='Home') mostrar(0); else if(e.key==='End') mostrar(slides.length-1,true);
+  else if(e.key==='n'||e.key==='N') document.getElementById('notas').classList.toggle('abierto');
+  else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.(); }
+});
+document.getElementById('escenario').addEventListener('click',e=>{ if(e.target.closest('.celda')) return; (e.clientX < innerWidth*0.25) ? retroceder() : avanzar(); });
+function escalar(){const k=Math.min(innerWidth/1600, innerHeight/900); document.getElementById('escenario').style.transform='scale('+k+')';}
+addEventListener('resize',escalar); escalar();
+mostrar(Math.max(0,(parseInt(location.hash.slice(1))||1)-1));
+setTimeout(()=>document.getElementById('ayuda').classList.add('oculta'),5000);
+</script>
+</body>
+</html>
